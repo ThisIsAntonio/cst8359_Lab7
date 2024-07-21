@@ -1,7 +1,11 @@
 using Lab7.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using System;
 
 namespace Lab7
@@ -13,12 +17,13 @@ namespace Lab7
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+            var connection = builder.Configuration.GetSection("ConnectionStrings").GetValue<string>("DefaultDBConnection");
             builder.Services.AddDbContext<StudentDbContext>(options => options.UseSqlServer(connection));
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Students API", Version = "v1" });
                 c.EnableAnnotations();
             });
 
@@ -40,14 +45,22 @@ namespace Lab7
             }
 
             // Configure the HTTP request pipeline.
+            var env = app.Services.GetRequiredService<IHostEnvironment>();
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseSwagger();
 
-            app.UseSwaggerUI();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Students API V1");
@@ -64,4 +77,3 @@ namespace Lab7
         }
     }
 }
-

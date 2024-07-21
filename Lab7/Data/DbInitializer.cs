@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Lab7.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Lab7.Data
 {
@@ -7,24 +9,25 @@ namespace Lab7.Data
         public static void Initialize(StudentDbContext context)
         {
             context.Database.Migrate();
+
             if (context.Students.Any())
             {
-                return;   // DB has been seeded
+                return; // DB has been seeded
             }
 
             var students = new Student[]
             {
-                new Student{FirstName="Carson", LastName="Alexander", Program="ICT"},
-                new Student{FirstName="Meredith", LastName="Alonso", Program="ICT"},
-                new Student{FirstName="Arturo", LastName="Anand", Program="ICT"},
-                new Student{FirstName="Gytis", LastName="Barzdukas", Program="ICT"}
+                new Student { FirstName = "Carson", LastName = "Alexander", Program = "ICT" },
+                new Student { FirstName = "Meredith", LastName = "Alonso", Program = "ICT" },
+                new Student { FirstName = "Arturo", LastName = "Anand", Program = "ICT" },
+                new Student { FirstName = "Gytis", LastName = "Barzdukas", Program = "ICT" }
             };
-            foreach (Student c in students)
+
+            foreach (Student s in students)
             {
-                context.Students.Add(c);
+                context.Students.Add(s);
             }
             context.SaveChanges();
         }
     }
 }
-
